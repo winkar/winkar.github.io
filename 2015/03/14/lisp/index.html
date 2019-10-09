@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="打算实现一个lisp解释器,纯做娱乐.   Lisp 七公理Lisp一开始是作为理论推倒被提出的,只是后来发现它恰好可以真的实现成为编程语言而已. (这看起来就像,python是恰好可以运行的伪代码)因此它的形式上具备极高的美感(当然,有戏言称lisp程序的最后一页全是右括号,不过要知道那么长的程序,不管什么语言都不会看着很让人愉悦). 在黑客与画家中提到,lisp当年所提出的一些理念,到很多年后">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lisp">
+<meta property="og:url" content="http://winkar.github.io/2015/03/14/lisp/index.html">
+<meta property="og:site_name" content="陈文青">
+<meta property="og:description" content="打算实现一个lisp解释器,纯做娱乐.   Lisp 七公理Lisp一开始是作为理论推倒被提出的,只是后来发现它恰好可以真的实现成为编程语言而已. (这看起来就像,python是恰好可以运行的伪代码)因此它的形式上具备极高的美感(当然,有戏言称lisp程序的最后一页全是右括号,不过要知道那么长的程序,不管什么语言都不会看着很让人愉悦). 在黑客与画家中提到,lisp当年所提出的一些理念,到很多年后">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-10-09T12:49:26.081Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lisp">
+<meta name="twitter:description" content="打算实现一个lisp解释器,纯做娱乐.   Lisp 七公理Lisp一开始是作为理论推倒被提出的,只是后来发现它恰好可以真的实现成为编程语言而已. (这看起来就像,python是恰好可以运行的伪代码)因此它的形式上具备极高的美感(当然,有戏言称lisp程序的最后一页全是右括号,不过要知道那么长的程序,不管什么语言都不会看着很让人愉悦). 在黑客与画家中提到,lisp当年所提出的一些理念,到很多年后">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://winkar.github.io/2015/03/14/lisp/">
+
+
+
+
+
+  <title>Lisp | 陈文青</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">陈文青</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://winkar.github.io/2015/03/14/lisp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="WinKaR">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="陈文青">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Lisp</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-03-14T00:00:00+08:00">
+                2015-03-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>打算实现一个lisp解释器,纯做娱乐.</p>
+<!--break-->
+
+<h1 id="Lisp-七公理"><a href="#Lisp-七公理" class="headerlink" title="Lisp 七公理"></a>Lisp 七公理</h1><p>Lisp一开始是作为理论推倒被提出的,只是后来发现它恰好可以真的实现成为编程语言而已. (这看起来就像,python是恰好可以运行的伪代码)<br>因此它的形式上具备极高的美感(当然,有戏言称lisp程序的最后一页全是右括号,不过要知道那么长的程序,不管什么语言都不会看着很让人愉悦).</p>
+<p>在<code>黑客与画家</code>中提到,lisp当年所提出的一些理念,到很多年后才在新生代的编程语言中得到大规模的应用.关于这些理念是什么暂且按下,我们先看一看lisp语言的基础结构.</p>
+<p>就像平面几何的五个公理(把平行线公理换掉可以推导出另外的几何体系,这不禁让人想象,如果把lisp的原语换成另外一组会怎么样), lisp有七个公理,是七个基础操作符.</p>
+<h3 id="quote-x-gt-x"><a href="#quote-x-gt-x" class="headerlink" title="(quote x)    =&gt;    x"></a>(quote x)    =&gt;    x</h3><p>quote操作符返回其参数本身,不对其求值,在lisp中通常简写为’x</p>
+<h3 id="atom-x-gt-t"><a href="#atom-x-gt-t" class="headerlink" title="(atom x)     =&gt;     t | ()"></a>(atom x)     =&gt;     t | ()</h3><p>在lisp中,习惯以t表示真,以空表()表示假<br>atom操作符在x是一个原子或者空表时返回t, 否则返回()</p>
+<h3 id="eq-x-y-gt-t"><a href="#eq-x-y-gt-t" class="headerlink" title="(eq x y)     =&gt;     t | ()"></a>(eq x y)     =&gt;     t | ()</h3><p>eq操作符即相等操作符,作用不言自明</p>
+<h3 id="car-x"><a href="#car-x" class="headerlink" title="(car x)"></a>(car x)</h3><p>car要求x是一个表,它返回x的第一个元素</p>
+<h3 id="cdr-x"><a href="#cdr-x" class="headerlink" title="(cdr x)"></a>(cdr x)</h3><p>cdr同样要求x是一个表,返回x中除了第一个元素以外的所有元素</p>
+<h3 id="cons-x-y"><a href="#cons-x-y" class="headerlink" title="(cons x y)"></a>(cons x y)</h3><p>要求y是一个表.返回一个表,其第一个元素是x,后面的元素为y中的所有元素</p>
+<h3 id="cond-p1-e1-p2-e2-…-pn-en"><a href="#cond-p1-e1-p2-e2-…-pn-en" class="headerlink" title="(cond (p1 e1) (p2 e2) … (pn en))"></a>(cond (p1 e1) (p2 e2) … (pn en))</h3><p>cond是条件表达式,其复杂程度就像欧几里得的第五个公理.cond将p1到pn依次求值, 直到找到第一个值为t的pi,把对应的ei作为整个表达式的值返回.</p>
+<p>七个操作符中,除了quote和cond, 其它操作符会对它的所有参数求值.</p>
+<h1 id="lisp-实现"><a href="#lisp-实现" class="headerlink" title="lisp 实现"></a>lisp 实现</h1><p>在这里,我要尝试从零开始用python实现一个lisp解释器.</p>
+<p>之前说的是那些基本的列表操作,然而通过它们并不足以构建出一个lisp语言,现在引入一些额外的符号.</p>
+<ol>
+<li><p>(define var exp):<br> 定义var,其值为exp求值的结果</p>
+</li>
+<li><p>(lambda (p1 p2 … pn) exp):<br> 表达式的求值结果为一个函数,pi为其参数,exp为其函数体</p>
+</li>
+</ol>
+<p>好吧经过一段时间的学习，我仍是没有完成lisp的实现……不过已经快了。</p>
+<p>整个项目放在<a href="git@github.com:winkar/lisp.git">github</a>上，实现了七个基本原语当中的除cond以外的六个。</p>
+<p>前段时间读了读SICP，发觉自己对于lisp的理解还是有很大的偏差，很多我以为是函数的东西，事实上应当被叫做“special form”。这样很多东西就好解释了。</p>
+<p>我也曾试图用yacc和lex来处理，后来由于对于lisp理解的偏差没能成功，最后还是用裸写的方式。</p>
+<p>有时间再继续吧。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/02/27/netforce/" rel="next" title="Netforce Writeup">
+                <i class="fa fa-chevron-left"></i> Netforce Writeup
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/04/04/rust/" rel="prev" title="Rust ABC">
+                Rust ABC <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">WinKaR</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lisp-七公理"><span class="nav-number">1.</span> <span class="nav-text">Lisp 七公理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#quote-x-gt-x"><span class="nav-number">1.0.1.</span> <span class="nav-text">(quote x)    =&gt;    x</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#atom-x-gt-t"><span class="nav-number">1.0.2.</span> <span class="nav-text">(atom x)     =&gt;     t | ()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#eq-x-y-gt-t"><span class="nav-number">1.0.3.</span> <span class="nav-text">(eq x y)     =&gt;     t | ()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#car-x"><span class="nav-number">1.0.4.</span> <span class="nav-text">(car x)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cdr-x"><span class="nav-number">1.0.5.</span> <span class="nav-text">(cdr x)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cons-x-y"><span class="nav-number">1.0.6.</span> <span class="nav-text">(cons x y)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cond-p1-e1-p2-e2-…-pn-en"><span class="nav-number">1.0.7.</span> <span class="nav-text">(cond (p1 e1) (p2 e2) … (pn en))</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#lisp-实现"><span class="nav-number">2.</span> <span class="nav-text">lisp 实现</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WinKaR</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
